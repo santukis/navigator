@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 internal class TabletNavigator(activity: AppCompatActivity) : Navigator(activity) {
 
-    override fun getContainerFor(fragmentFactory: FragmentFactory): Int =
+    override fun getContainerFor(fragmentFactory: FragmentFactory): Int? =
         when (isLandscape()) {
             true -> fragmentFactory.getLandscapeContainer()
             false -> fragmentFactory.getPortraitContainer()

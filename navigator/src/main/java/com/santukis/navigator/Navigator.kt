@@ -124,15 +124,20 @@ abstract class Navigator(activity: AppCompatActivity) {
 
     private fun loadFragment(fragmentFactory: FragmentFactory, fragment: Fragment) {
         try {
-            getTransaction()?.apply {
-                replace(getContainerFor(fragmentFactory), fragment, fragmentFactory.getBackStackTag())
-                setUpTransactionAnimations(this, fragmentFactory)
-                setUpTransactionBackStack(this, fragmentFactory)
-                commitAllowingStateLoss()
+            getTransaction()?.let { transaction ->
+                getContainerFor(fragmentFactory)?.let { container ->
+                    transaction.replace(container, fragment, fragmentFactory.getBackStackTag())
+                    setUpTransactionAnimations(transaction, fragmentFactory)
+                    setUpTransactionBackStack(transaction, fragmentFactory)
+                    transaction.commitAllowingStateLoss()
+
+                } ?: resetBackStackIfNeeded()
             }
 
         } catch (exception: Exception) {
             exception.printStackTrace()
+            resetBackStackIfNeeded()
+            loadFragment(fragmentFactory, fragment)
         }
     }
 
@@ -154,7 +159,7 @@ abstract class Navigator(activity: AppCompatActivity) {
         )
     }
 
-    protected abstract fun getContainerFor(fragmentFactory: FragmentFactory): Int
+    protected abstract fun getContainerFor(fragmentFactory: FragmentFactory): Int?
 
     protected abstract fun isLastFragment(): Boolean
 
