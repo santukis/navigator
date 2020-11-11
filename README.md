@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/santukis/navigator.svg)](https://jitpack.io/#santukis/navigator)
+
 # navigator
 ### Utility class to help Android navigation (Activities and Fragments)
 
