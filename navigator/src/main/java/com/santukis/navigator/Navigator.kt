@@ -1,10 +1,13 @@
 package com.santukis.navigator
 
 import android.content.ActivityNotFoundException
+import android.content.pm.ActivityInfo
 import android.os.Build
-import androidx.fragment.app.Fragment
+import androidx.annotation.IntDef
+import androidx.annotation.StringDef
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import java.lang.ref.WeakReference
 
@@ -12,8 +15,20 @@ abstract class Navigator(activity: AppCompatActivity) {
 
     protected val activity: WeakReference<AppCompatActivity> = WeakReference(activity)
 
-    fun initializeScreenOrientation() {
-        activity.get()?.requestedOrientation = getScreenOrientation()
+    /**
+     * @param phoneOrientation must be an ActivityInfo @ScreenOrientation value
+     * @param tabletOrientation must be an ActivityInfo @ScreenOrientation value
+     */
+    fun initializeScreenOrientation(
+        phoneOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED,
+        tabletOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+    ) {
+        activity.get()?.apply {
+            requestedOrientation = when(isTablet(this.applicationContext)) {
+                true -> tabletOrientation
+                false -> phoneOrientation
+            }
+        }
     }
 
     fun openFragment(fragmentFactory: FragmentFactory) {
@@ -21,9 +36,11 @@ abstract class Navigator(activity: AppCompatActivity) {
         showFragment(fragmentFactory, fragment)
     }
 
-    fun openActivity(activityFactory: ActivityFactory,
-                     onSuccess: () -> Unit = {  },
-                     onError: (String) -> Unit = {  }) {
+    fun openActivity(
+        activityFactory: ActivityFactory,
+        onSuccess: () -> Unit = { },
+        onError: (String) -> Unit = { }
+    ) {
         activity.get()?.apply {
             try {
                 startActivity(activityFactory.getIntent(this))
@@ -35,9 +52,11 @@ abstract class Navigator(activity: AppCompatActivity) {
         } ?: onError("Error: No Context")
     }
 
-    fun openActivityForResult(activityFactory: ActivityFactory,
-                              requestCode: Int,
-                              onError: (String) -> Unit = {  }) {
+    fun openActivityForResult(
+        activityFactory: ActivityFactory,
+        requestCode: Int,
+        onError: (String) -> Unit = { }
+    ) {
         activity.get()?.apply {
             try {
                 startActivityForResult(activityFactory.getIntent(this), requestCode)
@@ -76,13 +95,11 @@ abstract class Navigator(activity: AppCompatActivity) {
     private fun resetBackStackIfNeeded() {
         val size = activity.get()?.supportFragmentManager?.backStackEntryCount ?: 0
 
-        if (size > 0) {
-            for (index in 0 until size) {
-                activity.get()?.supportFragmentManager?.popBackStack()
-            }
-
-            activity.get()?.supportFragmentManager?.executePendingTransactions()
+        for (index in 0 until size) {
+            activity.get()?.supportFragmentManager?.popBackStack()
         }
+
+        activity.get()?.supportFragmentManager?.executePendingTransactions()
     }
 
     private fun getFragment(fragmentFactory: FragmentFactory): Fragment {
@@ -143,14 +160,20 @@ abstract class Navigator(activity: AppCompatActivity) {
 
     private fun getTransaction(): FragmentTransaction? = activity.get()?.supportFragmentManager?.beginTransaction()
 
-    private fun setUpTransactionBackStack(transaction: FragmentTransaction, fragmentFactory: FragmentFactory) {
+    private fun setUpTransactionBackStack(
+        transaction: FragmentTransaction,
+        fragmentFactory: FragmentFactory
+    ) {
         when(val tag = fragmentFactory.getBackStackTag()) {
             null -> transaction.disallowAddToBackStack()
             else -> transaction.addToBackStack(tag)
         }
     }
 
-    private fun setUpTransactionAnimations(transaction: FragmentTransaction, fragmentFactory: FragmentFactory) {
+    private fun setUpTransactionAnimations(
+        transaction: FragmentTransaction,
+        fragmentFactory: FragmentFactory
+    ) {
         transaction.setCustomAnimations(
             fragmentFactory.getEnterAnimation(),
             fragmentFactory.getExitAnimation(),
@@ -162,6 +185,4 @@ abstract class Navigator(activity: AppCompatActivity) {
     protected abstract fun getContainerFor(fragmentFactory: FragmentFactory): Int?
 
     protected abstract fun isLastFragment(): Boolean
-
-    abstract fun getScreenOrientation(): Int
 }

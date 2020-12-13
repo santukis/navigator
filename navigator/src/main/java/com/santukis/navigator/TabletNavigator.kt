@@ -1,6 +1,5 @@
 package com.santukis.navigator
 
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 
@@ -23,7 +22,5 @@ internal class TabletNavigator(activity: AppCompatActivity) : Navigator(activity
 
     private fun isLandscape() =
         activity.get()?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    override fun getScreenOrientation(): Int = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
 }
