@@ -19,6 +19,6 @@ Next add the dependency to the build.gradle of your module:
 
 ```gradle
 dependencies {
-    implementation 'com.github.santukis:navigator:1.0.0@aar'
+    implementation 'com.github.santukis:navigator:[jiptack_version]@aar'
 }
 ```
