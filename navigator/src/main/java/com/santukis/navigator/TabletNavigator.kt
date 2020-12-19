@@ -12,12 +12,7 @@ internal class TabletNavigator(activity: AppCompatActivity) : Navigator(activity
         }
 
     override fun isLastFragment(): Boolean {
-        return activity.get()?.let {
-            when (isLandscape()) {
-                true -> it.supportFragmentManager.backStackEntryCount <= 2
-                false -> it.supportFragmentManager.backStackEntryCount <= 1
-            }
-        } ?: false
+        return activity.get()?.let { it.supportFragmentManager.backStackEntryCount <= 1 } ?: false
     }
 
     private fun isLandscape() =
