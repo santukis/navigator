@@ -184,5 +184,5 @@ abstract class Navigator(activity: AppCompatActivity) {
 
     protected abstract fun getContainerFor(fragmentFactory: FragmentFactory): Int?
 
-    protected abstract fun isLastFragment(): Boolean
+    abstract fun isLastFragment(): Boolean
 }
