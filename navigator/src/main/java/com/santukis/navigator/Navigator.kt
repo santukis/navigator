@@ -3,8 +3,6 @@ package com.santukis.navigator
 import android.content.ActivityNotFoundException
 import android.content.pm.ActivityInfo
 import android.os.Build
-import androidx.annotation.IntDef
-import androidx.annotation.StringDef
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -62,14 +60,28 @@ abstract class Navigator(activity: AppCompatActivity) {
                 startActivityForResult(activityFactory.getIntent(this), requestCode)
 
             } catch (exception: ActivityNotFoundException) {
-                onError("Error: No Activity")
+                onError(exception.message ?: "Unknown Error")
             }
+        }
+    }
+
+    fun openActivityForResult(
+        fragment: Fragment,
+        activityFactory: ActivityFactory,
+        requestCode: Int,
+        onError: (String) -> Unit = { }
+    ) {
+        try {
+            fragment.startActivityForResult(activityFactory.getIntent(fragment.requireContext()), requestCode)
+
+        } catch (exception: ActivityNotFoundException) {
+            onError(exception.message ?: "Unknown Error")
         }
     }
 
     fun closeCurrentFragment() {
         when {
-            isLastFragment() -> activity.get()?.finish()
+            isLastFragment() -> closeActivity()
             else -> try {
                 activity.get()?.supportFragmentManager?.popBackStackImmediate()
             } catch (exception: Exception) {
@@ -78,8 +90,16 @@ abstract class Navigator(activity: AppCompatActivity) {
         }
     }
 
+    private fun closeActivity() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            activity.get()?.finishAfterTransition()
+        } else {
+            activity.get()?.finish()
+        }
+    }
+
     fun closeCurrentActivity() {
-        activity.get()?.finish()
+        closeActivity()
     }
 
     fun isFragmentVisible(fragment: Class<out Fragment>): Boolean {
