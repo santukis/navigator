@@ -7,7 +7,5 @@ abstract class ActivityFactory {
 
     abstract fun getIntent(context: Context): Intent
 
-    open fun getEnterAnimation(): Int = 0
-
-    open fun getExitAnimation(): Int = 0
+    open fun getAnimations(): TransitionAnimation = TransitionAnimation.NO_ANIMATIONS
 }

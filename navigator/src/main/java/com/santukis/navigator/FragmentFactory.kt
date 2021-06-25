@@ -15,13 +15,9 @@ abstract class FragmentFactory {
 
     abstract fun getBackStackTag(): String?
 
-    open fun getEnterAnimation(): Int = 0
+    open fun getAnimations(): TransitionAnimation = TransitionAnimation.NO_ANIMATIONS
 
-    open fun getExitAnimation(): Int = 0
-
-    open fun getPopEnterAnimation(): Int = 0
-
-    open fun getPopExitAnimation(): Int = 0
+    open fun getPopAnimations(): TransitionAnimation = TransitionAnimation.NO_ANIMATIONS
 
     fun update(fragment: Fragment): Fragment {
         val updatedArguments = createArguments()

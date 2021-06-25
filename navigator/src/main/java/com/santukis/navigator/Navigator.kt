@@ -42,7 +42,9 @@ abstract class Navigator(activity: AppCompatActivity) {
         activity.get()?.apply {
             try {
                 startActivity(activityFactory.getIntent(this))
-                overridePendingTransition(activityFactory.getEnterAnimation(), activityFactory.getExitAnimation())
+                activityFactory.getAnimations().apply {
+                    overridePendingTransition(enterAnimation, exitAnimation)
+                }
                 onSuccess()
 
             } catch (exception: ActivityNotFoundException) {
@@ -195,11 +197,12 @@ abstract class Navigator(activity: AppCompatActivity) {
         transaction: FragmentTransaction,
         fragmentFactory: FragmentFactory
     ) {
+
         transaction.setCustomAnimations(
-            fragmentFactory.getEnterAnimation(),
-            fragmentFactory.getExitAnimation(),
-            fragmentFactory.getPopEnterAnimation(),
-            fragmentFactory.getPopExitAnimation()
+            fragmentFactory.getAnimations().enterAnimation,
+            fragmentFactory.getAnimations().exitAnimation,
+            fragmentFactory.getPopAnimations().enterAnimation,
+            fragmentFactory.getPopAnimations().exitAnimation
         )
     }
 
