@@ -3,10 +3,13 @@ package com.santukis.navigator
 import android.content.ActivityNotFoundException
 import android.content.pm.ActivityInfo
 import android.os.Build
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.NavDirections
+import androidx.navigation.findNavController
 import java.lang.ref.WeakReference
 
 abstract class Navigator(activity: AppCompatActivity) {
@@ -88,8 +91,26 @@ abstract class Navigator(activity: AppCompatActivity) {
             else -> try {
                 activity.get()?.supportFragmentManager?.popBackStackImmediate()
             } catch (exception: Exception) {
-                exception.printStackTrace()
+                //no-op
             }
+        }
+    }
+
+    fun navigateTo(@IdRes viewId: Int, destiny: NavDirections) {
+        try {
+            activity.get()?.findNavController(viewId)?.navigate(destiny)
+
+        } catch (exception: Exception) {
+            //no-op
+        }
+    }
+
+    fun navigateUp(@IdRes viewId: Int) {
+        try {
+            activity.get()?.findNavController(viewId)?.navigateUp()
+
+        } catch (exception: Exception) {
+            //no-op
         }
     }
 
