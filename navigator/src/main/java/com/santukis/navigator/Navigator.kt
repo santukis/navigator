@@ -42,6 +42,7 @@ abstract class Navigator(activity: AppCompatActivity) {
         activity.get()?.apply {
             try {
                 startActivity(activityFactory.getIntent(this))
+                overridePendingTransition(activityFactory.getEnterAnimation(), activityFactory.getExitAnimation())
                 onSuccess()
 
             } catch (exception: ActivityNotFoundException) {
